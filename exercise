@@ -1,0 +1,67 @@
+import matplotlib.pyplot as plt
+
+import numpy as np
+
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+from keras.optimizers import SGD
+
+#create some data
+x = np.linspace(-1, 1, 200)
+np.random.shuffle(x)
+
+y = x ** 2  + 10# + np.random.normal(0, .05, (200, ))
+plt.scatter(x, y) #plot
+plt.show()
+
+#assort the data to train data and test data
+
+
+x_train, y_train = x[:160], y[:160]
+x_test, y_test = x[160:], y[160:]
+
+#create MLP model
+model = Sequential()
+model.add(Dense(4, activation='tanh', input_dim=1))
+model.add(Dense(4, input_dim=4, activation='tanh'))
+model.add(Dense(4, input_dim=4, activation='tanh'))
+model.add(Dense(4, input_dim=4, activation='tanh'))
+
+#model.add(Dropout(.2))
+'''
+model.add(Dense(64, activation='sigmoid', use_bias=True))
+model.add(Dense(32, activation='sigmoid', use_bias=True))
+model.add(Dense(16, activation='sigmoid', use_bias=True))
+model.add(Dense(8, activation='sigmoid', use_bias=True))
+model.add(Dense(4, activation='sigmoid', use_bias=True))
+'''
+model.add(Dense(1))
+
+#model.add(Dropout(.2))
+#model.add(Dense(1, activation='relu'))
+
+
+#sgd = SGD(lr=.01, decay=1e-6, momentum=.9, nesterov=True)
+model.compile(loss='mse', optimizer='sgd')
+
+for step in range(10000):
+  cost = model.train_on_batch(x_train, y_train)
+  if step % 1000 == 0:
+      print("train cost: ", cost)
+
+#model.fit(x_train, y_train, epochs=10000, batch_size=160)
+score = model.evaluate(x_test, y_test, batch_size=40)
+print("score:", cost)
+#W, B = model.layers[0].get_weights()
+#print(W, B)
+
+
+y_pred = model.predict(x_test)
+plt.scatter(x_test, y_test, color='red')
+plt.scatter(x_test, y_pred)
+plt.show()
+
+
+
+
+
